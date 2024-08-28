@@ -114,6 +114,38 @@ const RootMutationType = new GraphQLObjectType({
         return book;
       },
     },
+    updateBook: {
+      type: BookType,
+      description: "Update a book",
+      args: {
+        id: { type: GraphQLNonNull(GraphQLInt) },
+        name: { type: GraphQLString },
+        authorId: { type: GraphQLInt },
+      },
+      resolve: (parent, args) => {
+        const book = books.find((book) => book.id === args.id);
+        if (!book) throw new Error("Book not found");
+
+        if (args.name) book.name = args.name;
+        if (args.authorId) book.authorId = args.authorId;
+
+        return book;
+      },
+    },
+    deleteBook: {
+      type: BookType,
+      description: "Delete a book",
+      args: {
+        id: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve: (parent, args) => {
+        const bookIndex = books.findIndex((book) => book.id === args.id);
+        if (bookIndex === -1) throw new Error("Book not found");
+
+        const deletedBook = books.splice(bookIndex, 1);
+        return deletedBook[0];
+      },
+    },
     addAuthor: {
       type: AuthorType,
       description: "Add a author",
@@ -127,6 +159,38 @@ const RootMutationType = new GraphQLObjectType({
         };
         authors.push(author);
         return author;
+      },
+    },
+    updateAuthor: {
+      type: AuthorType,
+      description: "Update an author",
+      args: {
+        id: { type: GraphQLNonNull(GraphQLInt) },
+        name: { type: GraphQLString },
+      },
+      resolve: (parent, args) => {
+        const author = authors.find((author) => author.id === args.id);
+        if (!author) throw new Error("Author not found");
+
+        if (args.name) author.name = args.name;
+
+        return author;
+      },
+    },
+    deleteAuthor: {
+      type: AuthorType,
+      description: "Delete an author",
+      args: {
+        id: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve: (parent, args) => {
+        const authorIndex = authors.findIndex(
+          (author) => author.id === args.id
+        );
+        if (authorIndex === -1) throw new Error("Author not found");
+
+        const deletedAuthor = authors.splice(authorIndex, 1);
+        return deletedAuthor[0];
       },
     },
   }),
